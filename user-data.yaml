@@ -1,0 +1,30 @@
+#cloud-config
+users:
+  - name: yc-user
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCsNtKDt/fKZpWfAFSyyviNQ4GLSz1JwK7K1nNnKdUaoROCnYQ2wX7DqRR944MHT8h5pJs9iZHMWg6YBYvqjcAQQuaJ5aIK/NGW+146/11sDhzSXtjFsjRkienqDh3mhiIZKVlMYZO9FG7VM76J+Kt6DGXsQRMwquokC03oIu5ggexZfK2AIMOLPjOWuqeAUxtY7+zDxxxmyuZqyeHLHZiiZlCvSvf8yfyZaGQMpMlbOdo6pcj2K9y2jhhnWoItSdzj15idp3N7P8NBtNoiSVz5q9GaNLH9eECMBjwawS6X9i8/nOl9gAK2BerZ5/xxcZxeoqcIYXWmIdr4jyYgdkznOqChN0rbhO+Kq6p2G0+xnNU+UGUSHQ+5uEF/i3TItzO0yvlyue1YHvFQWLu43y+KozpL8Zsd2IMLgp2o90UJSwwpzmZ7N1fssBN9QyBWnDE6arYA8A+EM3MRKZmNOY/fokQ2DgModgyh9k9RoiWQByfAgNJBiQigr6CQFDA3xmM= appuser
+
+write_files:
+- encoding: b64
+  content: IyEvYmluL3NoCnN1ZG8gYXB0IHVwZGF0ZQpzdWRvIGFwdCBpbnN0YWxsIC15IHJ1YnktZnVsbCBydWJ5LWJ1bmRsZXIgYnVpbGQtZXNzZW50aWFsCg==
+  owner: root:root
+  path: /root/install_ruby.sh
+  permissions: '0700'
+- encoding: b64
+  content: IyEvYmluL3NoCnN1ZG8gYXB0LWdldCBpbnN0YWxsIC15IG1vbmdvZGIKc3VkbyBzeXN0ZW1jdGwgc3RhcnQgbW9uZ29kYgpzdWRvIHN5c3RlbWN0bCBlbmFibGUgbW9uZ29kYgo=
+  owner: root:root
+  path: /root/install_mongodb.sh
+  permissions: '0700'
+- encoding: b64
+  content: IyEvYmluL3NoCnN1ZG8gYXB0LWdldCBpbnN0YWxsIC15IGdpdApnaXQgY2xvbmUgLWIgbW9ub2xpdGggaHR0cHM6Ly9naXRodWIuY29tL2V4cHJlc3M0Mi9yZWRkaXQuZ2l0CmNkIHJlZGRpdCAmJiBidW5kbGUgaW5zdGFsbApwdW1hIC1kCg==
+  owner: root:root
+  path: /root/deploy.sh
+  permissions: '0700'
+
+runcmd:
+ - /root/install_ruby.sh
+ - /root/install_mongodb.sh
+ - /root/deploy.sh
