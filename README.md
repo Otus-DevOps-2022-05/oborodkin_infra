@@ -60,3 +60,25 @@ Host internalhost
 bastion_IP = 51.250.79.62
 someinternalhost_IP = 10.128.0.21
 ```
+
+## 6 - Основные сервисы Yandex Cloud
+
+```
+testapp_IP = 51.250.8.189
+testapp_port = 9292
+```
+
+Используемая команда CLI для создания и запуска инстанса:
+
+```
+yc compute instance create \
+  --name reddit-app \
+  --hostname reddit-app \
+  --cores=2 \
+  --memory=4 \
+  --core-fraction=20 \
+  --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1604-lts,size=10GB \
+  --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 \
+  --metadata serial-port-enable=1 \
+  --metadata-from-file user-data=user-data.yaml
+```
