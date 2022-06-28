@@ -1,0 +1,12 @@
+[Unit]
+Description=Reddit Full
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/local/bin/puma --dir /home/ubuntu/reddit
+
+[Install]
+WantedBy=default.target

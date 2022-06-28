@@ -82,3 +82,31 @@ yc compute instance create \
   --metadata serial-port-enable=1 \
   --metadata-from-file user-data=user-data.yaml
 ```
+
+## 7 - Модели управления инфраструктурой. Подготовка образов с помощью Packer 
+
+Что сделано:
+
+1)
+
+Создан шаблон для Packer ubuntu16.json. Ключевые и дополнительные параметры вынесены в переменные.
+
+Пример использования:
+
+`packer build -var-file=variables.json.examples ./ubuntu16.json`
+
+2)
+
+Создан шаблон для Packer для подготовки bake-образа immutable.json
+
+Пример использования:
+
+`packer build -var-file=variables.json.examples ./immutable.json`
+
+В папке files:
+ * описание сервиса systemd `reddit-app.service`
+ * дополнительные скрипт `deploy.sh` для деплоя ReditApp
+ 
+3)
+
+Создан shell-скрипт config-scripts/create-reddit-vm.sh с командой yc по созданию ВМ на основе подготовленного образа по шаблону immutable.json.
