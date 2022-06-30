@@ -1,0 +1,44 @@
+{
+    "builders": [
+        {
+            "type": "yandex",
+            "service_account_key_file": "{{user `service_account_key_file`}}",
+            "folder_id": "{{user `folder_id`}}",
+            "source_image_family": "{{user `source_image_family`}}",
+            "zone": "{{user `zone`}}",
+            "subnet_id": "{{user `subnet_id`}}",
+            "use_ipv4_nat": true,
+            "image_name": "reddit-full-{{timestamp}}",
+            "image_family": "reddit-full",
+            "ssh_username": "ubuntu",
+            "platform_id": "standard-v1"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "pause_before": "30s",
+            "script": "scripts/install_ruby.sh",
+            "execute_command": "sudo {{.Path}}"
+        },
+        {
+            "type": "shell",
+            "script": "scripts/install_mongodb.sh",
+            "execute_command": "sudo {{.Path}}"
+        },
+        {
+            "type": "file",
+            "source": "files/reddit-app.service",
+            "destination": "/tmp/reddit-app.service"
+        },
+        {
+            "type": "shell",
+            "inline": ["sudo mv /tmp/reddit-app.service /etc/systemd/system/reddit-app.service"]
+        },
+        {
+            "type": "shell",
+            "script": "files/deploy.sh",
+            "execute_command": "sudo {{.Path}}"
+        }
+    ]
+}
