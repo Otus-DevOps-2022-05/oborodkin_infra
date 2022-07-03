@@ -1,0 +1,9 @@
+cloud_id                 = "abc123"
+folder_id                = "cba123"
+zone                     = "ru-central1-a"
+image_id                 = "qwerty123"
+public_key_path          = "~/.ssh/appuser.pub"
+private_key_path         = "~/.ssh/appuser"
+subnet_id                = "asd123"
+service_account_key_file = "/home/user/terraformservice_key.json"
+app_count = 2
