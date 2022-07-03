@@ -6,7 +6,7 @@ resource "yandex_lb_target_group" "app-group" {
     for_each = yandex_compute_instance.app
     content {
       subnet_id = var.subnet_id
-      address = target.value["network_interface"].0.ip_address
+      address   = target.value["network_interface"].0.ip_address
     }
   }
 }

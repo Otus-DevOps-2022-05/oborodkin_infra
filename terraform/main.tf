@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    yandex = {
-      source  = "yandex-cloud/yandex"
-      version = "0.76.0"
-    }
-  }
-}
-
 provider "yandex" {
   service_account_key_file = var.service_account_key_file
   cloud_id                 = var.cloud_id
@@ -16,8 +7,8 @@ provider "yandex" {
 
 resource "yandex_compute_instance" "app" {
   count = var.app_count
-  name = "reddit-app-${count.index}"
-  zone = var.app_zone
+  name  = "reddit-app-${count.index}"
+  zone  = var.app_zone
 
   resources {
     cores  = 2
