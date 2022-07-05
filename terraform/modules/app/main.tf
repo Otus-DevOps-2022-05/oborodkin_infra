@@ -25,4 +25,35 @@ resource "yandex_compute_instance" "app" {
   metadata = {
     ssh-keys = "ubuntu:${file(var.public_key_path)}"
   }
+
+  connection {
+    type  = "ssh"
+    host  = self.network_interface.0.nat_ip_address
+    user  = "ubuntu"
+    agent = false
+    # путь до приватного ключа
+    private_key = file(var.private_key_path)
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 60s"
+    ]
+  }
+
+  provisioner "file" {
+    content     = templatefile("${path.module}/puma.service.tftpl", { database_ip_address = var.database_ip_address })
+    destination = "/tmp/puma.service"
+  }
+
+  # искуственная задержка, что Ubuntu успела обновиться
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 60s"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    script = "${path.module}/deploy.sh"
+  }
 }

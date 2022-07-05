@@ -1,0 +1,7 @@
+cloud_id                 = "abc123"
+folder_id                = "abc123"
+zone                     = "ru-central1-a"
+service_account_key_file = "/home/oborodkin/terraformservice_key.json"
+access_key               = "abc123"
+secret_key               = "abc123"
+bucket_name              = "name"

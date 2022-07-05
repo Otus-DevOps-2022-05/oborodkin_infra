@@ -1,0 +1,12 @@
+cloud_id                 = "abc123"
+folder_id                = "abc123"
+zone                     = "ru-central1-a"
+app_disk_image           = "abc123"
+app_res_cores            = 4
+app_res_memory           = 8
+db_disk_image            = "abc123"
+db_res_cores             = 4
+db_res_memory            = 8
+public_key_path          = "~/.ssh/appuser.pub"
+private_key_path         = "~/.ssh/appuser"
+service_account_key_file = "/home/oborodkin/terraformservice_key.json"
