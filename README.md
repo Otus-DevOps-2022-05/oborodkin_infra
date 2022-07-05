@@ -140,5 +140,39 @@ yc compute instance create \
 
 Пример применение конфигурации для окружения prod:
 
-`terraform apply -var-file=prod/terraform.tfvars prod`
+```
+cd prod
+terraform init
+terraform plan
+terraform apply
+```
+
+2) Задание со звёздочкой
+
+Создал ключ доступа для сервисной учётной записи для работы с Object Storage:
+
+`yc iam access-key create --service-account-name terraformservice --description "Key for bucket"`
+
+Создал и применил отдельную конфигурацию `terraform/bucket` для создания Object Storage в облаке.
+
+Добавил отдельные переменные окружения для последующего использования при инициализации Terraform и подключения backend'а:
+
+```
+export SVC_ACCT_ACCESS_KEY="qwe..."
+export SVC_ACCT_SECRET_KEY= "qwe..."
+export BUCKET_NAME= "name..."
+```
+
+Команда для инициализации Terraform с backend в облаке:
+
+```
+terraform init \
+  -backend-config="access_key=$SVC_ACCT_ACCESS_KEY" \
+  -backend-config="secret_key=$SVC_ACCT_SECRET_KEY" \
+  -backend-config="bucket=$BUCKET_NAME"
+```
+
+Запускал применение конфигурации одновременно stage и prod, не увидел, как работает блокировка.
+
+Обе попытки применения конфигурации срабатывают, пока одна не отвалится из-за ошибки, что уже есть ресурс с таким именем.
 
