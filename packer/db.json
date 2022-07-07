@@ -8,8 +8,8 @@
             "zone": "{{user `zone`}}",
             "subnet_id": "{{user `subnet_id`}}",
             "use_ipv4_nat": true,
-            "image_name": "reddit-base-{{timestamp}}",
-            "image_family": "reddit-base",
+            "image_name": "reddit-db-base-{{timestamp}}",
+            "image_family": "reddit-db-base",
             "ssh_username": "ubuntu",
             "platform_id": "standard-v1"
         }
@@ -18,11 +18,6 @@
         {
             "type": "shell",
             "pause_before": "30s",
-            "script": "scripts/install_ruby.sh",
-            "execute_command": "sudo {{.Path}}"
-        },
-        {
-            "type": "shell",
             "script": "scripts/install_mongodb.sh",
             "execute_command": "sudo {{.Path}}"
         }

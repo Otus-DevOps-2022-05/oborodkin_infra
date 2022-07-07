@@ -127,3 +127,64 @@ yc compute instance create \
 * variables.tf - добавлен входной параметр app_count. Значение указывает на кол-во создаваемых экземпляров ВМ
 * main.tf - используется мета-аргумент `count`, через который задаётся кол-во создаваемых экземпляров ВМ
 * lb.tf - динамическое построение блока target со списком целевых ВМ, на который балансируется трафик
+
+## 9 - Принципы организации инфраструктурного кода и работа над инфраструктурой в команде на примере Terraform
+
+Что сделано:
+
+1) Основное и самостоятельно задание.
+
+Конфигурация Terraform через модули.
+Конфигурация для окружений stage, prod.
+Дополнительные параметры для модулей: core_fraction, res_cores, res_memory.
+
+Пример применение конфигурации для окружения prod:
+
+```
+cd prod
+terraform init
+terraform plan
+terraform apply
+```
+
+2) Задание со звёздочкой
+
+Создал ключ доступа для сервисной учётной записи для работы с Object Storage:
+
+`yc iam access-key create --service-account-name terraformservice --description "Key for bucket"`
+
+Создал и применил отдельную конфигурацию `storage-bucket.tf` для создания Object Storage в облаке.
+
+Добавил отдельные переменные окружения для последующего использования при инициализации Terraform и подключения backend'а:
+
+```
+export SVC_ACCT_ACCESS_KEY="qwe..."
+export SVC_ACCT_SECRET_KEY= "qwe..."
+export BUCKET_NAME= "name..."
+```
+
+Команда для инициализации Terraform с backend в облаке:
+
+```
+terraform init \
+  -backend-config="access_key=$SVC_ACCT_ACCESS_KEY" \
+  -backend-config="secret_key=$SVC_ACCT_SECRET_KEY" \
+  -backend-config="bucket=$BUCKET_NAME"
+```
+
+Запускал применение конфигурации одновременно stage и prod, не увидел, как работает блокировка.
+
+Обе попытки применения конфигурации срабатывают, пока одна не отвалится из-за ошибки, что уже есть ресурс с таким именем.
+
+3) Задание с двумя звёздочками
+
+Доработал `packer/scripts/install_mongodb.sh` в части внесения изменения в конфиг mongodb.conf, чтоб сервис "слушал" сетевой интерфейс.
+Пересоздал образ db.json в облаке через Packer.
+
+Добавил provisioners в модуль app.
+
+В модуль app передаётся значение ip_address из модуля db.
+Тем самым задаётся неявная зависимость модуля app от модуля db. По готовности ВМ с db выданный ему внутренний IP будет передан в ресурс app.
+
+ip_address от db в модуле app используется, как значение переменной для шаблона puma.service.tftpl.
+Значение используется для переменной окружения DATABASE_URL в составе описания юнита systemd, чтоб сервис приложения подключился к MongoDB.
