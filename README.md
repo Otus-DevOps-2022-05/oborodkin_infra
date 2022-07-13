@@ -188,3 +188,56 @@ terraform init \
 
 ip_address от db в модуле app используется, как значение переменной для шаблона puma.service.tftpl.
 Значение используется для переменной окружения DATABASE_URL в составе описания юнита systemd, чтоб сервис приложения подключился к MongoDB.
+
+## 10 - Управление конфигурацией. Знакомство с Ansible 
+
+Последовательность команд:
+
+```
+ansible-playbook clone.yml
+ansible app -m command -a 'rm -rf ~/reddit'
+ansible-playbook clone.yml
+```
+
+**Что изменилось и почему?**
+
+Ответ: Первая отработка playbook выдала результат, что состояние сервера отвечает конфигурации, и никаких изменений не было выполнено.
+Вторая отработка playbook выдала результат, что состояние сервера изменено, чтоб привести к соответствию конфигурации.
+Т.е. выполнены необходимые действия в связи с тем, что предыдущей командой директория была удалена.
+
+### Задание со звёздочкой
+
+Для формирования динамического инвентори я задействовал данные от CLI Yandex Cloud, которые с помощью утилиты jq привожу к нужному формату JSON.
+
+Для получения данных о запущенных ВМ в формате JSON: `yc compute instance list --folder-id $FOLDER_ID --format json`
+
+Полученный результат с помощью jq привожу к формату инвентори JSON:
+
+```
+{
+  "app": {
+    "hosts": [
+      "51.250.82.142"
+    ]
+  },
+  "db": {
+    "hosts": [
+      "51.250.91.224"
+    ]
+  }
+}
+```
+
+Исполняемый скрипт `inventory.sh`:
+```
+#!/bin/sh
+
+echo $( yc compute instance list --folder-id $FOLDER_ID --format json | jq 'map( { (if .name == "reddit-app" then "app" elif .name == "reddit-db" then "db"  else empty end | tostring): {hosts: [.network_interfaces[0].primary_v4_address.one_to_one_nat.address]} } ) | add')
+```
+
+Скрипт указал в `ansible.cfg`:
+```
+inventory = ./inventory.sh
+```
+
+В результате динамический инвентори генерируется "на лету".
