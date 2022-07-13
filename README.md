@@ -211,7 +211,7 @@ ansible-playbook clone.yml
 
 Для получения данных о запущенных ВМ в формате JSON: `yc compute instance list --folder-id $FOLDER_ID --format json`
 
-Полученный результат с помощью jq привожу к формату инвентори JSON:
+Полученный результат с помощью jq привожу к формату динамического инвентори JSON:
 
 ```
 {
@@ -235,9 +235,15 @@ ansible-playbook clone.yml
 echo $( yc compute instance list --folder-id $FOLDER_ID --format json | jq 'map( { (if .name == "reddit-app" then "app" elif .name == "reddit-db" then "db"  else empty end | tostring): {hosts: [.network_interfaces[0].primary_v4_address.one_to_one_nat.address]} } ) | add')
 ```
 
-Скрипт указал в `ansible.cfg`:
+Скрипт можно указать в `ansible.cfg`:
 ```
 inventory = ./inventory.sh
 ```
 
-В результате динамический инвентори генерируется "на лету".
+Или использовать через параметр -i команды ansible:
+
+```
+ansible all -i ./inventory.sh -m ping
+```
+
+В результате динамический инвентори генерируется "на лету" во время выполнения команды ansible.
